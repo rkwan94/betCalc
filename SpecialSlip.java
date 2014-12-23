@@ -94,6 +94,28 @@ public class SpecialSlip {
 		allBetCombos = betCombs;
 	}
 	
+	public double showOneReturn(double[] outcome){
+		double totalOdds = 1.0;
+		for(int i = 0; i < outcome.length; i++){
+			totalOdds *= outcome[i];
+		}
+		return totalOdds*stake;
+	}
+	
+	public double showAllReturns(double[] outcome){
+		double winnings = 0;
+		for(int i = 0; i < outcome.length; i++){
+			if(isSubset(allBetCombos[i], outcome) == true){
+				winnings += showOneReturn(allBetCombos[i]);
+			}
+		}
+		return winnings;
+	}
+	
+	public double totalOutlay(){
+		return stake*allBetCombos.length;
+	}
+	
 	private int combs(int n, int r) {
 		int nFact = fact(n);
 		int rFact = fact(r);
@@ -110,8 +132,6 @@ public class SpecialSlip {
 		}
 	}
 	
-	
-	
 	private boolean isSubset(double[] small, double[] big) {
 		boolean possibleSubset = true;
 		for(int i = 0; i < small.length; i++){
@@ -126,8 +146,28 @@ public class SpecialSlip {
 	private int countItems(double item, double[] list){
 		int count = 0;
 		for(int i = 0; i < list.length; i++)
-			if(list[i] == item) count++;
+			if(list[i] == item){
+				count++;
+			}
 		return count;
+	}
+	
+	public double[] getLeastWins(double[][] allOutcomes){
+		double[] leastWins = allOutcomes[0];
+		for(int i = 0; i < allOutcomes.length; i++){
+			
+		}
+		return leastWins;
+	}
+	
+	public void printWinningOutcomes(){
+		System.out.println("These outcomes will produce profitable wins:");
+		System.out.println("Total cost: $" + totalOutlay());
+		for(int i = 0; i < allBetCombos.length; i++){
+			if(totalOutlay() < showAllReturns(allBetCombos[i])){
+				printCombo(i);
+			}
+		}
 	}
 
 	public void printSlip(){
@@ -138,17 +178,25 @@ public class SpecialSlip {
 		for(int i = 0; i < type; i++){
 			System.out.println("Bet #" + i + ": " + bet[i]);
 		}
-		printCombos();
+		printAllCombos();
 	}
 	
-	private void printCombos() {
+	private void printAllCombos() {
 		for(int i = 0; i < numCombs; i++){
-			System.out.println("Bet Combo #" + i);
+			System.out.println("Bet Combo #" + (i+1));
 			for(int j = 0; j < allBetCombos[i].length; j++){
 				System.out.println("\t" + allBetCombos[i][j]);
 			}
 		}
 	}
+	
+	private void printCombo(int index){
+		System.out.println("Bet Combo #" + (index+1));
+		for(int j = 0; j < allBetCombos[index].length; j++){
+			System.out.println("\t" + allBetCombos[index][j]);
+		}
+	}
+	
 
 	//Data
 	private double stake;
