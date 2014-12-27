@@ -104,7 +104,7 @@ public class SpecialSlip {
 	
 	public double showAllReturns(double[] outcome){
 		double winnings = 0;
-		for(int i = 0; i < outcome.length; i++){
+		for(int i = 0; i < allBetCombos.length; i++){
 			if(isSubset(allBetCombos[i], outcome) == true){
 				winnings += showOneReturn(allBetCombos[i]);
 			}
