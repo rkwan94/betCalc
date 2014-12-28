@@ -1,5 +1,6 @@
 package betCalc;
 
+
 public class SpecialSlip {
 	//constructors
 	public SpecialSlip(){
@@ -195,8 +196,15 @@ public class SpecialSlip {
 		for(int j = 0; j < allBetCombos[index].length; j++){
 			System.out.println("\t" + allBetCombos[index][j]);
 		}
+		System.out.println("\t Profit: $" + showProfit(index));
 	}
 	
+	public double showProfit(int index){
+		double profit = showAllReturns(allBetCombos[index]) - totalOutlay();
+		profit = Math.round(profit*100);
+		profit /= 100;
+		return profit;
+	}
 
 	//Data
 	private double stake;
