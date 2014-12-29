@@ -117,7 +117,7 @@ public class SpecialSlip {
 		return stake*allBetCombos.length;
 	}
 	
-	private int combs(int n, int r) {
+	public int combs(int n, int r) {
 		int nFact = fact(n);
 		int rFact = fact(r);
 		
