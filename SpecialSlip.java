@@ -1,7 +1,16 @@
 package betCalc;
 
+import java.util.*;
+
 
 public class SpecialSlip {
+	//Data
+		protected double stake;
+		protected int type;
+		protected int numCombs;
+		protected List<Double> bets;
+		protected ArrayList<List<Double>> allBetCombos;
+	
 	//constructors
 	public SpecialSlip(){
 		stake = 0;
@@ -9,149 +18,40 @@ public class SpecialSlip {
 		numCombs = 0;
 	}
 	
-	public SpecialSlip(double stk, int numBets, double[] betArray){
+	public SpecialSlip(double stk, int numBets, ArrayList<Double> betArray){
 		stake = stk;
 		type = numBets;
 		for(int i = 2; i <= numBets; i++){
-			numCombs += combs(numBets, i);
-		}
-		bet = betArray;
-		double[][] betCombs = new double[numCombs][];
-		
-		//Populate 2d Array
-		int y = 0;
-		for(int i = 0; i < type; i++){
-			for(int j = i+1; j < type; j++){
-				for(int k = j+1; k < type; k++){
-					for(int l = k+1; l < type; l++){
-						for(int m = l+1; m < type; m++){
-							for(int n = m+1; n < type; n++){
-								for(int o = n+1; o < type; o++){
-									for(int p = o + 1; p < type; p++){
-										betCombs[y] = new double[8];
-										betCombs[y][0] = bet[i];
-										betCombs[y][1] = bet[j];
-										betCombs[y][2] = bet[k];
-										betCombs[y][3] = bet[l];
-										betCombs[y][4] = bet[m];
-										betCombs[y][5] = bet[n];
-										betCombs[y][6] = bet[o];
-										betCombs[y][7] = bet[p];
-										y++;
-									}
-									
-									betCombs[y] = new double[7];
-									betCombs[y][0] = bet[i];
-									betCombs[y][1] = bet[j];
-									betCombs[y][2] = bet[k];
-									betCombs[y][3] = bet[l];
-									betCombs[y][4] = bet[m];
-									betCombs[y][5] = bet[n];
-									betCombs[y][6] = bet[o];
-									y++;
-								}
-								
-								betCombs[y] = new double[6];
-								betCombs[y][0] = bet[i];
-								betCombs[y][1] = bet[j];
-								betCombs[y][2] = bet[k];
-								betCombs[y][3] = bet[l];
-								betCombs[y][4] = bet[m];
-								betCombs[y][5] = bet[n];
-								y++;
-							}
-							
-							betCombs[y] = new double[5];
-							betCombs[y][0] = bet[i];
-							betCombs[y][1] = bet[j];
-							betCombs[y][2] = bet[k];
-							betCombs[y][3] = bet[l];
-							betCombs[y][4] = bet[m];
-							y++;
-						}
-
-						betCombs[y] = new double[4];
-						betCombs[y][0] = bet[i];
-						betCombs[y][1] = bet[j];
-						betCombs[y][2] = bet[k];
-						betCombs[y][3] = bet[l];
-						y++;
-					}
-
-					betCombs[y] = new double[3];
-					betCombs[y][0] = bet[i];
-					betCombs[y][1] = bet[j];
-					betCombs[y][2] = bet[k];
-					y++;
-				}
-
-				betCombs[y] = new double[2];
-				betCombs[y][0] = bet[i];
-				betCombs[y][1] = bet[j];
-				y++;
-			}
+			numCombs += betCalcMath.combs(numBets, i);
 		}
 		
-		allBetCombos = betCombs;
+		bets = betArray;
+		allBetCombos = betCalcMath.powerSet(betArray);
 	}
 	
-	public double showOneReturn(double[] outcome){
+	public double showOneReturn(List<Double> outcome){
 		double totalOdds = 1.0;
-		for(int i = 0; i < outcome.length; i++){
-			totalOdds *= outcome[i];
+		for(int i = 0; i < outcome.size(); i++){
+			totalOdds *= outcome.get(i);
 		}
-		return totalOdds*stake;
+		return totalOdds*this.stake;
 	}
 	
-	public double showAllReturns(double[] outcome){
+	public double showAllReturns(List<Double> outcome){
 		double winnings = 0;
-		for(int i = 0; i < allBetCombos.length; i++){
-			if(isSubset(allBetCombos[i], outcome) == true){
-				winnings += showOneReturn(allBetCombos[i]);
+		for(int i = 0; i < this.allBetCombos.size(); i++){
+			if(this.allBetCombos.get(i).containsAll(outcome) == true){
+				winnings += showOneReturn(this.allBetCombos.get(i));
 			}
 		}
 		return winnings;
 	}
 	
 	public double totalOutlay(){
-		return stake*allBetCombos.length;
+		return this.stake*this.allBetCombos.size();
 	}
 	
-	public int combs(int n, int r) {
-		int nFact = fact(n);
-		int rFact = fact(r);
-		
-		int result = nFact/(rFact*fact(n-r));
-		return result;
-	}
 
-	private int fact(int n) {
-		if(n == 0){
-			return 1;
-		}else{
-			return n*fact(n-1);
-		}
-	}
-	
-	private boolean isSubset(double[] small, double[] big) {
-		boolean possibleSubset = true;
-		for(int i = 0; i < small.length; i++){
-			if(countItems(small[i], big) < countItems(small[i], small)){
-				possibleSubset = false;
-				break;
-			}
-		}
-		return possibleSubset;
-	}
-	
-	private int countItems(double item, double[] list){
-		int count = 0;
-		for(int i = 0; i < list.length; i++)
-			if(list[i] == item){
-				count++;
-			}
-		return count;
-	}
 	
 	public double[] getLeastWins(double[][] allOutcomes){
 		double[] leastWins = allOutcomes[0];
@@ -164,8 +64,8 @@ public class SpecialSlip {
 	public void printWinningOutcomes(){
 		System.out.println("These outcomes will produce profitable wins:");
 		System.out.println("Total cost: $" + totalOutlay());
-		for(int i = 0; i < allBetCombos.length; i++){
-			if(totalOutlay() < showAllReturns(allBetCombos[i])){
+		for(int i = 0; i < this.allBetCombos.size(); i++){
+			if(totalOutlay() < showAllReturns(this.allBetCombos.get(i))){
 				printCombo(i);
 			}
 		}
@@ -177,39 +77,34 @@ public class SpecialSlip {
 		System.out.println("Number of bets: " + type);
 		System.out.println("All bets");
 		for(int i = 0; i < type; i++){
-			System.out.println("Bet #" + i + ": " + bet[i]);
+			System.out.println("Bet #" + i + ": " + bets.get(i));
 		}
 		printAllCombos();
 	}
 	
 	private void printAllCombos() {
-		for(int i = 0; i < numCombs; i++){
+		for(int i = 0; i < this.numCombs; i++){
 			System.out.println("Bet Combo #" + (i+1));
-			for(int j = 0; j < allBetCombos[i].length; j++){
-				System.out.println("\t" + allBetCombos[i][j]);
+			for(int j = 0; j < this.allBetCombos.get(i).size(); j++){
+				System.out.println("\t" + this.allBetCombos.get(i).get(j));
 			}
 		}
 	}
 	
 	private void printCombo(int index){
 		System.out.println("Bet Combo #" + (index+1));
-		for(int j = 0; j < allBetCombos[index].length; j++){
-			System.out.println("\t" + allBetCombos[index][j]);
+		for(int j = 0; j < this.allBetCombos.get(index).size(); j++){
+			System.out.println("\t" + this.allBetCombos.get(index).get(j));
 		}
 		System.out.println("\t Profit: $" + showProfit(index));
 	}
 	
 	public double showProfit(int index){
-		double profit = showAllReturns(allBetCombos[index]) - totalOutlay();
+		double profit = showAllReturns(this.allBetCombos.get(index)) - totalOutlay();
 		profit = Math.round(profit*100);
 		profit /= 100;
 		return profit;
 	}
 
-	//Data
-	private double stake;
-	private int type;
-	private int numCombs;
-	private double[] bet;
-	private double[][] allBetCombos;
+	
 }

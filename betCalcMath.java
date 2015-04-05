@@ -1,5 +1,7 @@
 package betCalc;
 
+import java.util.*;
+
 public class betCalcMath {
 	public static int combs(int n, int r) {
 		int nFact = fact(n);
@@ -35,5 +37,25 @@ public class betCalcMath {
 				count++;
 			}
 		return count;
+	}
+	
+	public static ArrayList<List<Double>> powerSet(ArrayList<Double> set){
+		ArrayList<List<Double>> powSet = new ArrayList<List<Double>>();
+		powSet.add(new ArrayList<Double>());
+		
+		for(Double i : set){
+			ArrayList<List<Double>> newPs = new ArrayList<List<Double>>();
+			
+			for(List<Double> subset : powSet){
+				newPs.add(subset);
+				
+				List<Double> newSubset = new ArrayList<Double>(subset);
+				newSubset.add(i);
+				newPs.add(newSubset);
+			}
+			powSet = newPs;
+		}
+		
+		return powSet;
 	}
 }
